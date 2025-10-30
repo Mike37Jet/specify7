@@ -109,7 +109,7 @@ COPY --chown=specify:specify Makefile /opt/specify7/
 COPY --chown=specify:specify specifyweb.wsgi /opt/specify7/
 COPY --chown=specify:specify config /opt/specify7/config
 COPY --chown=specify:specify sp7_db_setup_check.sh /opt/specify7/
-RUN chmod +x /opt/specify7/sp7_db_setup_check.sh
+RUN chmod +x /opt/specify7/sp7_db_setup_check.sh && chmod +x /opt/specify7/docker-entrypoint.sh
 
 ARG BUILD_VERSION
 ARG GIT_SHA

@@ -33,7 +33,14 @@ services:
     build:
       context: ./.
       target: run-development
-    command: ve/bin/python manage.py runserver 0.0.0.0:8000
+    entrypoint: ["/bin/bash", "-c"]
+    command: 
+      - |
+        until mysqladmin ping -h mariadb -u root -p${MYSQL_ROOT_PASSWORD} --silent; do 
+          echo 'Esperando MariaDB...'
+          sleep 2
+        done
+        cd /opt/specify7 && ve/bin/python manage.py runserver 0.0.0.0:8000
     init: true
     restart: unless-stopped
     depends_on:
@@ -70,7 +77,10 @@ services:
     build:
       context: ./.
       target: run-development
-    command: bash -c "ve/bin/celery -A specifyweb worker -l INFO --concurrency=1 -Q $DATABASE_NAME"
+    entrypoint: ["/bin/bash", "-c"]
+    command: 
+      - |
+        cd /opt/specify7 && ve/bin/celery -A specifyweb worker -l INFO --concurrency=1 -Q $DATABASE_NAME
     init: true
     volumes:
       - "./config:/opt/Specify/config:ro"
@@ -100,7 +110,7 @@ services:
     container_name: nginx
     image: nginx:alpine
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - "static-files:/volumes/static-files:ro"
       - "./config:/volumes/specify-config:ro"
